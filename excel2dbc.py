@@ -72,6 +72,7 @@ class Excel2Dbc:
         self.writefile1()
 
     def writefile1(self):
+        # BO_ 部分
         # 0 ~ 182
         for value in self.first_col:
             if self.flag != value:
@@ -126,11 +127,10 @@ class Excel2Dbc:
                 self.writefile2()
 
         print(self.text)
-
-        self.writeDbc()  # 写入文件
+        self.writefile3()
 
     def writefile2(self):
-
+        # SG_ 部分
         self.text += ' SG_ '
         j = 0
         for val in self.first_row:
@@ -199,6 +199,55 @@ class Excel2Dbc:
                     self.text += 'Vector__XXX\n'
 
         self.i += 1
+
+    def writefile3(self):
+        # CM_ SG_ 部分
+        self.text += '\n\n\n'
+        # 2~183
+        for index in range(2, len(self.first_col) + 1):
+            self.text += 'CM_ SG_ '
+            j = 0
+            for val in self.first_row:
+                j += 1
+                if "Msg ID" in val:
+                    try:
+                        # 十六转十进制
+                        self.text += str(int(self.sheet.cell(row=index, column=j).value, base=16)) + ' '
+                        break
+                    except TypeError as result:
+                        print(result)
+                        print("i = %d, j = %d" % (index, j))
+            j = 0
+            for val in self.first_row:
+                j += 1
+                if "Signal Name" in val:
+                    self.text += str(self.sheet.cell(row=index, column=j).value) + ' '
+                    break
+
+            j = 0
+            for val in self.first_row:
+                j += 1
+                if "Signal comment" in val:
+                    comment = str(self.sheet.cell(row=index, column=j).value)
+                    if comment == 'None':
+                        comment = ' '
+                        self.text += '"' + comment + ' ";\n'
+                        break
+                    else:
+                        self.text += '"' + comment + ' ";\n'
+                        break
+        self.writefile4()
+
+    def writefile4(self):
+        # BA_ 部分
+        self.text += '\n'
+        self.text += 'BA_ "BusType" "CAN";\n' + 'BA_ "DBName" "BMS";\n' + 'BA_ "NmNode" BU_ BMS 0;\n' + \
+            'BA_ "NmAsrCanMsgCycleOffset" BU_ BMS 0;\n' + 'BA_ "NmStationAddress" BU_ BMS 0;\n' + \
+            'BA_ "NmAsrNodeIdentifier" BU_ BMS 0;\n' + 'BA_ "NodeLayerModules" BU_ BMS "CANoeILNLVector.dll";\n' + \
+            'BA_ "ILUsed" BU_ BMS 1;\n' + 'BA_ "NmAsrCanMsgReducedTime" BU_ BMS 320;\n' + 'BA_ "NmAsrNode" BU_ BMS 0;\n'
+        self.text += 'BA_ '
+
+        self.writeDbc()  # 写入文件
 
     def writeDbc(self):
         dbc_name = self.filename + '.dbc'
