@@ -126,7 +126,6 @@ class Excel2Dbc:
             else:
                 self.writefile2()
 
-        print(self.text)
         self.writefile3()
 
     def writefile2(self):

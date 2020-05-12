@@ -97,7 +97,7 @@ if __name__ == '__main__':
     # 创建一个应用对象
     app = QApplication()
     # 设置主窗口图标
-    app.setWindowIcon(QIcon('./ico/logo.png'))
+    app.setWindowIcon(QIcon('./logo/logo.png'))
 
     window = MyWindow()
     # 显示
